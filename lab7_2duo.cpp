@@ -10,9 +10,11 @@
 #include <time.h>
 #include <semaphore.h>
 #include <pthread.h>
-#include "conio.h"
+// #include "conio.h"
+// #include <curses.h>
 
 #define CHAIRNUM 5
+#define NUM_TIMES_TO_EAT 10
 
 sem_t chopstick[CHAIRNUM];
 int timeUsed[CHAIRNUM];
@@ -27,8 +29,6 @@ int main()
 	int param[CHAIRNUM];
 	int i;
 
-	clrscr();
-	// Initialize semaphores
 	for (i = 0; i < CHAIRNUM; i++)
 	{
 		param[i] = i;
@@ -48,74 +48,54 @@ int main()
 	for (i = 0; i < CHAIRNUM; i++)
 		sem_destroy(&chopstick[i]);
 
+	for (i = 0; i < CHAIRNUM; i++)
+		printf("timeUsed[%c] = %d\n", i + 'A', timeUsed[i]);
+
 	return 0;
 }
 
 void *philosopher(void *who)
 {
 	int no = (int)*((int *)who);
-	int i = 0, j;
+	int i = 0;
 
-	for (i = 0; i < 10; i++)
+	for (; i < NUM_TIMES_TO_EAT;)
 	{
-		gotoxy(1, no * 4 + 1);
 		printf("Mr. %c is thinking...                                    \n", 'A' + no);
 		fflush(stdout);
 		randomDelay();
-
 		sem_wait(&chopstick[no]);
-		gotoxy(1, no * 4 + 1);
 		printf("Mr. %c is taking a chopstick on the left side...    \n", 'A' + no);
 		fflush(stdout);
 		randomDelay();
-		
 		if (sem_trywait(&chopstick[(no + 1) % CHAIRNUM]) == -1) // Return 0 is success
-		{ // Try if the lock is a success
+		{														// Try if the lock is a success
 			sem_post(&chopstick[no]);
 			continue;
 		}
 		else
 		{
-			gotoxy(1, no * 4 + 2);
 			printf("Mr. %c is taking a chopstick on the right side...\n", 'A' + no);
 			fflush(stdout);
 		}
-
 		// Critical Section
 		randomDelay();
+		i++;
 		timeUsed[no]++;
 		timeUsed[(no + 1) % CHAIRNUM]++;
-		gotoxy(no * 10 + 1, CHAIRNUM * 4 + 1);
-		printf("CH[%d]=%d ", no, timeUsed[no]);
-		gotoxy(((no + 1) % CHAIRNUM) * 10 + 1, CHAIRNUM * 4 + 1);
-		printf("CH[%d]=%d ", (no + 1) % CHAIRNUM, timeUsed[(no + 1) % CHAIRNUM]);
-		gotoxy(no * 10 + 1, CHAIRNUM * 4 + 2);
-		printf("  [%c]=%d ", 'A' + no, i);
-
-		gotoxy(1, no * 4 + 1);
-		printf("                                                                 \n");
-		gotoxy(1, no * 4 + 2);
-		printf("                                                                 \n");
 		randomDelay();
-
 		sem_post(&chopstick[no]);
-		gotoxy(1, no * 4 + 1);
 		printf("Mr. %c drops a chopstick on the left side...        \n", 'A' + no);
 		fflush(stdout);
 		sem_post(&chopstick[(no + 1) % CHAIRNUM]);
-		gotoxy(1, no * 4 + 2);
 		printf("Mr. %c drops a chopstick on the right side...       \n", 'A' + no);
 		fflush(stdout);
 		// Remaining Section
 		randomDelay();
-		gotoxy(1, no * 4 + 2);
-		printf("                                                                 \n");
-		gotoxy(1, no * 4 + 1);
 		printf("Mr. %c is chewing food...                             \n", 'A' + no);
 		fflush(stdout);
 		randomDelay();
 	}
-	gotoxy(1, no * 4 + 1);
 	printf("Mr. %c is full...                                         \n", 'A' + no);
 	fflush(stdout);
 	pthread_exit(0);
