@@ -56,7 +56,7 @@ void *philosopher(void *who)
 	int no = (int)*((int *)who);
 	int i = 0, j;
 
-	for (i = 0; i < 10; i++)
+	while (i < 10)
 	{
 		gotoxy(1, no * 4 + 1);
 		printf("Mr. %c is thinking...                                    \n", 'A' + no);
@@ -72,7 +72,9 @@ void *philosopher(void *who)
 			sem_wait(&chopstick[(no + 1) % CHAIRNUM]);
 			gotoxy(1, no * 4 + 2);
 			printf("Mr. %c is taking a chopstick on the right side...\n", 'A' + no);
-			fflush(stdout);
+			fflush(stdout); 
+			i++;
+			//printf("i = %d\n", i);
 		}
 		else
 		{
@@ -84,7 +86,9 @@ void *philosopher(void *who)
 			sem_wait(&chopstick[no]);
 			gotoxy(1, no * 4 + 1);
 			printf("Mr. %c is taking a chopstick on the left side...    \n", 'A' + no);
-			fflush(stdout);
+			fflush(stdout); 
+			i++;
+			//printf("i = %d\n", i);
 		}
 
 		// Critical Section
