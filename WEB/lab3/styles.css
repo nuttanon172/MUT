@@ -1,0 +1,19 @@
+.responsive-box {
+  padding: 20px;
+  background-color: lightgrey;
+}
+@media (max-width: 600px) {
+  .responsive-box {
+    background-color: lightcoral;
+  }
+}
+@media (min-width: 601px) and (max-width: 1024px) {
+  .responsive-box {
+    background-color: lightseagreen;
+  }
+}
+@media (min-width: 1025px) {
+  .responsive-box {
+    background-color: lightblue;
+  }
+}

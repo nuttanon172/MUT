@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <button @click="student[0].name='hello'">click</button>
+        <div v-for="item in student" style="border: 1px solid red;"
+            :style="item.name=='Natthanon'?'border-color:green':'border-color:red'">
+
+            Name:{{item.name}} <br>
+            Lastname:{{item.lastname}}
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const message = ref('Hello vue!')
+                return {
+                    message
+                }
+            },
+            data() {
+                return {
+                    student: [
+                        { name: 'Natthanon', lastname: 'Tairat' },
+                        { name: 'jiajxs', lastname: 'sdkknklp' },
+                        { name: 'Natthanon', lastname: 'Tairat' },
+                        { name: 'jiajxs', lastname: 'sdkknklp' },
+                        { name: 'Natthanon', lastname: 'Tairat' },
+                        { name: 'jiajxs', lastname: 'sdkknklp' },
+                        { name: 'Natthanon', lastname: 'Tairat' },
+                        { name: 'jiajxs', lastname: 'sdkknklp' },
+                    ]
+                }
+            },
+            methods: {
+
+            }
+        }).mount('#app')
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Canvas</title>
+	<style>
+		#mycanvas {
+			width: 300px;
+			height: 300px;
+			/*background-color: blue;*/
+		}
+
+		body {
+			/*background-color: chocolate;*/
+		}
+	</style>
+
+	<script>
+		function calc(r, d) {
+			let y = r * Math.sin((d * Math.PI) / 180);
+			let x = r * Math.cos((d * Math.PI) / 180);
+			return { x: x, y: y };
+		}
+		function drawcanvas() {
+			const canvas = document.getElementById('mycanvas');
+			const ctx = canvas.getContext('2d');
+			ctx.clearRect(0,0,300,300);
+			ctx.beginPath();
+			let cx = canvas.width / 2;
+			let cy = canvas.height / 2;
+			let minSize = canvas.width>canvas.height?canvas.height:canvas.width;
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 1;
+			ctx.arc(cx,cy, (minSize / 2) * 0.9, 0, 2*Math.PI);
+			ctx.stroke();
+			for (let i = 0;i < 12;i++){
+				let point1 = calc((minSize / 2) * 0.85, (i * 30)-90);
+				let point2 = calc((minSize / 2) * 0.75, (i * 30)-90);
+				ctx.beginPath();
+				ctx.moveTo(point1.x + cx, point1.y + cy);
+				ctx.lineTo(point2.x + cx, point2.y + cy);
+				ctx.stroke();
+				let point3 = calc((minSize / 2) * 0.70, (i * 30)-90);
+				ctx.font = '15px Tahoma';
+				let st = ctx.measureText((i + 1));
+				ctx.fillText((i + 1), (point3.x + cx)- (st.width / 2), point3.y + cy + 5);
+			}
+			let now = new Date();
+			let hour = now.getHours();
+			let min = now.getMinutes();
+			let sec = now.getSeconds();
+			let point_hour = calc((minSize / 2) * 0.68, (hour * 30) + (min * 0.5) + (sec * 0.0083) - 90);
+			ctx.beginPath();
+			ctx.lineWidth = 8;
+			ctx.strokeStyle = 'red';
+			ctx.moveTo(cx,cy);
+			ctx.lineTo(point_hour.x + cx, point_hour.y + cy);
+			ctx.stroke();
+			let point_min = calc((minSize / 2) * 0.68, (min * 6)  - 90);
+			ctx.beginPath();
+			ctx.lineWidth = 3;
+			ctx.strokeStyle = 'bue';
+			ctx.moveTo(cx,cy);
+			ctx.lineTo(point_min.x + cx, point_min.y + cy);
+			ctx.stroke();
+			let point_sec = calc((minSize / 2) * 0.68, (sec * 6) - 90);
+			ctx.beginPath();
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = 'green';
+			ctx.moveTo(cx,cy);
+			ctx.lineTo(point_sec.x + cx, point_sec.y + cy);
+			ctx.stroke();
+		}
+	</script>
+</head>
+
+<body onload="setInterval(drawcanvas, 1000)">
+	<canvas id="mycanvas" width="300" height="300"></canvas>
+</body>
+
+</html>

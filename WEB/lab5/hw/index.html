@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>To-Do List</title>
+	<script>
+		function run() {
+			let txt = document.getElementById('data').value;
+			if (txt) {
+				const show = document.getElementById('show');
+				const div = document.createElement('div');
+				div.style.color = 'Black';
+				div.style.border = '1px solid #000';
+				div.style.padding = '5px';
+				div.style.marginBottom = '5px';
+				div.style.borderRadius = '1rem';
+				div.style.cursor = 'pointer';
+				div.style.transition = 'opacity 0.5s';
+
+				div.onclick = function () {
+					div.style.textDecoration = 'line-through';
+					setTimeout(() => {
+						div.style.opacity = '0';
+						setTimeout(() => {
+							show.removeChild(div);
+							saveTasks();
+						}, 500);
+					}, 0);
+				};
+
+				const text = document.createTextNode(txt);
+				document.getElementById('data').value = null;
+				div.appendChild(text);
+				show.appendChild(div);
+				saveTasks();
+			}
+		}
+
+		function setupEnterKey() {
+			const input = document.getElementById('data');
+			input.addEventListener('keypress', function (event) {
+				if (event.key === 'Enter') {
+					event.preventDefault();
+					run();
+				}
+			});
+		}
+
+		function saveTasks() {
+			const show = document.getElementById('show');
+			const tasks = [];
+			show.querySelectorAll('div').forEach(taskDiv => {
+				tasks.push(taskDiv.textContent);
+			});
+			localStorage.setItem('tasks', JSON.stringify(tasks));
+		}
+
+		function loadTasks() {
+			const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+			const show = document.getElementById('show');
+			tasks.forEach(task => {
+				const div = document.createElement('div');
+				div.style.color = 'Black';
+				div.style.border = '1px solid #000';
+				div.style.padding = '5px';
+				div.style.marginBottom = '5px';
+				div.style.borderRadius = '1rem';
+				div.style.cursor = 'pointer';
+				div.style.transition = 'opacity 0.5s';
+				div.onclick = function () {
+					div.style.textDecoration = 'line-through';
+					setTimeout(() => {
+						div.style.opacity = '0';
+						setTimeout(() => {
+							show.removeChild(div);
+							saveTasks(); // save
+						}, 500);
+					}, 0);
+				};
+
+				const text = document.createTextNode(task);
+				div.appendChild(text);
+				show.appendChild(div);
+			});
+		}
+
+		document.addEventListener('DOMContentLoaded', loadTasks);
+		document.addEventListener('DOMContentLoaded', setupEnterKey);
+	</script>
+	<style>
+		@font-face {
+			font-family: myFirstFont;
+			src: url('fontawesome-webfont.woff2');
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		:root {
+			--blue-color: hsla(224, 100%, 50%, 0.55);
+			--purple-color: hsla(274, 98%, 65%, 0.55);
+		}
+
+		body {
+			background: linear-gradient(90deg, var(--blue-color), var(--purple-color));
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+		}
+
+		.to-do-list {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: 1px solid white;
+			background-color: white;
+			border-radius: 1rem;
+			height: auto;
+			width: 400px;
+			margin: 0 auto;
+			margin-top: 5rem;
+			padding: 2rem;
+			flex-direction: column;
+		}
+
+		.sub_form {
+			display: flex;
+			text-align: center;
+			color: black;
+			margin-bottom: 1rem;
+			margin-top: 1.5rem;
+		}
+
+		.sub_form input {
+			flex: 1;
+			font-size: 1.5rem;
+			padding: 5px;
+			border-radius: 20px;
+		}
+
+		.sub_form button {
+			border: none;
+			outline: none;
+			padding: 5px 50px;
+			background-color: rgb(91, 91, 198);
+			color: white;
+			font-size: 1.5rem;
+			border-radius: 20px;
+			margin-left: -40px;
+			cursor: pointer;
+		}
+
+		#show {
+			width: 100%;
+			max-height: 300px;
+			overflow-y: auto;
+			text-align: left;
+			margin-top: 1rem;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="to-do-list">
+		<h1>To-Do List</h1>
+		<div class="sub_form">
+			<input id="data" type="text">
+			<button id="add" onclick="run()">Add</button>
+		</div>
+		<div id="show"></div>
+	</div>
+</body>
+
+</html>

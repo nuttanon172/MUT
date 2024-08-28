@@ -1,0 +1,9 @@
+/* styles.css */
+body {
+  background-color: pink;
+  background-image: url(bird-1232416_1280.png), url(car-967387_1280.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position:  center bottom, center calc(50vh - (25vh / 2));
+  background-size: auto 50vh, auto 25vh;
+}

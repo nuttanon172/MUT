@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <script>
+        function run() {
+            let txt = document.getElementById('data').value;
+            if (txt) {
+                const show = document.getElementById('show');
+                const div = document.createElement('div');
+                div.style.color = 'Black';
+                const text = document.createTextNode(txt);
+                document.getElementById('data').value = null;
+                div.appendChild(text);
+                show.appendChild(div);
+            }
+        }
+		function setupEnterKey() {
+            const input = document.getElementById('data');
+            input.addEventListener('keypress', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    run();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', setupEnterKey);
+    </script>
+    <style>
+        @font-face {
+            font-family: myFirstFont;
+            src: url('fontawesome-webfont.woff2');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --blue-color: hsla(224, 100%, 50%, 0.55);
+            --purple-color: hsla(274, 98%, 65%, 0.55);
+        }
+
+        body {
+            background: linear-gradient(90deg, var(--blue-color), var(--purple-color));
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .to-do-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid white;
+            background-color: white;
+            border-radius: 1rem;
+            height: auto;
+            width: 400px;
+            margin: 0 auto;
+            margin-top: 5rem;
+            padding: 2rem;
+            flex-direction: column;
+        }
+
+        .sub_form {
+            text-align: center;
+            color: black;
+            margin-bottom: 1rem;
+        }
+
+        #show {
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .bgD {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 80vh;
+        }
+
+        .dialog {
+            background-color: cornflowerblue;
+            position: absolute;
+            top: 25%;
+            left: calc(50% - 150px);
+            width: 300px;
+            height: 200px;
+            border-radius: 15px;
+            animation-name: start;
+            animation-duration: 1s;
+            animation-iteration-count: 1;
+            opacity: 1;
+        }
+
+        .dialog-title {
+            text-align: center;
+            margin: 5px;
+            color: white;
+        }
+
+        .dialog-body {
+            padding: 5px;
+        }
+
+        @keyframes start {
+            from {
+                top: -300px;
+            }
+            to {
+                top: 25%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="to-do-list">
+		<h1>To-Do List</h1>
+        <div class="sub_form">
+            <input id="data" type="text">
+            <button id="add" onclick="run()">Add</button>
+            <button onclick="document.getElementById('dialog').style.display='inline'">Dialog</button>
+        </div>
+        <div id="show"></div>
+    </div>
+    <div class="bgD" id="dialog">
+        <div class="dialog">
+            <div class="dialog-title">Dialog</div>
+            <div class="dialog-body">
+                Hello MUT<br>
+                Hello MUT<br>
+                Hello MUT<br>
+                <div><button onclick="document.getElementById('dialog').style.display='none'">OK</button></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

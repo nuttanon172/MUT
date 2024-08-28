@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>External JavaScript Example</title>
+	<script src="script.js"></script>
+	<script>
+		function Show() {
+			alert("Hello Func")
+		}
+	</script>
+</head>
+
+<body>
+	<h1>External JavaScript Example</h1>
+	<script>
+		let color = ['red', 'green', 'blue', 'yellow'];
+		let row = prompt('ใส่ตัวเลข row');
+		let col = prompt('ใส่ตัวเลข col');
+		document.write('<table border="1">')
+		for (let i = 0; i < row; i++) {
+			document.write(`<tr>`)
+			for (let j = 0; j < col; j++)
+				document.write(`<td style="background-color:${color[(i+j)%color.length]}">MUT</td>`);
+			document.write(`</tr>`)
+		}
+		document.write('</table>')
+	</script>
+	<p>Click the button to display a message.</p>
+	<button onclick="displayMessage()">Click me!</button>
+</body>
+
+</html>

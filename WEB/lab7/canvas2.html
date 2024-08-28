@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Canvas</title>
+    <style>
+        #mycanvas {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+    <script>
+        const img = new Image();
+        const img2 = new Image();
+        function calc(r, d) {
+            let y = r * Math.sin(d * Math.PI / 180);
+            let x = r * Math.cos(d * Math.PI / 180);
+            return { x: x, y: y };
+        }
+        function drawcanvas() {
+            const canvas = document.getElementById('mycanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 1;
+            ctx.lineJoin = 'miter';
+            img.status = false;
+            img2.status = false;
+            img.onload = () => {
+                img.status = true;
+                draw(ctx);
+            }
+            img.src = 'a.jpg';
+
+            img2.onload = () => {
+                img2.status = true;
+                draw(ctx);
+            }
+            img2.src = 'b.jpg';
+			//ctx.fillRect(0,0);
+        }
+        function draw(ctx) {
+            if(img.status==false || img2.status==false) return;
+            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img2, 0, 0);
+            let num = 3;
+            let dd = 360 / num;
+            for (let i = 0; i < num; i++) {
+                let point = calc(140, (i * dd) - 90);
+                ctx.moveTo(point.x + 150, point.y + 150);
+                let point2 = calc(20, (i * dd) + dd / 2 - 90);
+                ctx.lineTo(point2.x + 150, point2.y + 150);
+                let point3 = calc(140, ((i + 1) * dd) - 90);
+                ctx.lineTo(point3.x + 150, point3.y + 150);
+            }
+            ctx.stroke();
+            ctx.font = '30px Tahoma';
+            let stxt = ctx.measureText('Hello');
+            ctx.fillText('Hello', 150 - (stxt.width / 2), 150 + 15);
+            ctx.strokeText('Hello', 150 - (stxt.width / 2), 150 + 15);
+			var grd=ctx.createLinearGradient(0,0,50,150);
+			grd.addColorStop(0, "red");
+			grd.addColorStop(0.25, "green");
+			grd.addColorStop(1, "white");
+			ctx.fillStyle=grd;
+			ctx.fillRect(0,0,50,150);
+        }
+    </script>
+</head>
+
+<body onload="drawcanvas()">
+    <canvas id="mycanvas" width="300" height="300"></canvas>
+</body>
+
+</html>
