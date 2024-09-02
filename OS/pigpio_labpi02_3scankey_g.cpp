@@ -2,16 +2,21 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
+
+int ledGPIO[4] = {4, 5, 6, 12};
+int runningSpeed = 5;
+int running = 1;
 
 int keyGPIO_row[4] = {21, 22, 23, 24};
 int keyGPIO_col[3] = {25, 26, 27};
 int keyMap[4][3] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
-int running = 1;
 
-void initGPIO();
 int getch();
+void initGPIO();
+void *runningLED(void *param);
+void *getKey(void *param);
 
 void gpio_stop(int sig)
 {
@@ -24,18 +29,29 @@ void gpio_stop(int sig)
 int main()
 {
     int ch;
-
     initGPIO();
     signal(SIGINT, gpio_stop);
-    while (running)
+
+    pthread_t tid[2];
+    pthread_attr_t attr[2];
+    void *(*thread[2])(void *) = {runningLED, getKey};
+    int i;
+
+    for (i = 0; i < 2; i++)
     {
-        printf("Please press a key on keypad:");
-        fflush(stdout);
-        ch = getch();
-        printf("\nKey = %c\n", ch);
-        if (ch == '#' || ch == '*')
-            break;
-        runningLED(ch - '0');
+        pthread_attr_init(&attr[i]);
+        pthread_create(&tid[i], &attr[i], thread[i], NULL);
+    }
+
+    printf("Waiting all threads to stop...\n");
+    for (i = 0; i < 2; i++)
+    {
+        pthread_join(tid[i], NULL);
+    }
+
+    for (i = 0; i < 2; i++)
+    {
+        pthread_attr_destroy(&attr[i]);
     }
     gpioTerminate();
     return 0;
@@ -59,6 +75,24 @@ void initGPIO()
     }
 }
 
+void *runningLED(void *param)
+{
+    int i, j;
+    int pattern[4][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+
+    while (running)
+    {
+        for (i = 0; i < 4; i++)
+        {
+            for (j = 0; j < 4; j++)
+                gpioWrite(ledGPIO[j], pattern[i][j]);
+            usleep(runningSpeed * 20000);
+        }
+        if (runningSpeed > 9)
+            break;
+    }
+    pthread_exit(0);
+}
 int getch()
 {
     int row, col;
@@ -83,21 +117,25 @@ int getch()
             gpioWrite(keyGPIO_row[row], 1);
             return keyMap[row][col];
         }
-        usleep(100000);
+
+        // usleep(100000);
     }
 }
 
-void runningLED(int speed){
-    int i,j;
-    int pattern[4][4]={{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
-
-    if (speed < 0 || speed > 9)
-        return ;
-    while(running){
-        for(i=0;i<4;i++){
-            for(j=0;j<4;j++)
-                gpioWrite(ledGPIO[j],pattern[i][j]);
-            usleep(speed*20000);
-        }
+void *getKey(void *param)
+{
+    while (running)
+    {
+        printf("Please enter speed (1 upto 9 or 10 to stop program):");
+        fflush(stdout);
+        runningSpeed = getch();
+        runningSpeed -= 0x30;
+        printf("\nKey = %d\n", runningSpeed);
+        if (runningSpeed == '#')
+            break;
+        // scanf("%d",&runningSpeed);
+        if ((runningSpeed > 9) || (runningSpeed < 1))
+            break;
     }
+    pthread_exit(0);
 }
