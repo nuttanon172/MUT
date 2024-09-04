@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+		function getdata() {
+			var http = new XMLHttpRequest();
+			http.onreadystatechange = function () {
+				if (http.readyState == 4) {
+					if (http.status == 200) {
+						var data = JSON.parse(http.responseText)
+						let table = document.getElementById('table')
+						let txttable = '<tr><td>SSN</td><td>FNAME</td><td>LNAME</td></tr>';
+						for (i = 0; i < data.length; i++) {
+							txttable += `<tr><td>${data[i].ssn}</td>`;
+							txttable += `<td>${data[i].fname}</td>`;
+							txttable += `<td>${data[i].lname}</td></tr>`;
+						}
+						table.innerHTML = txttable;
+					}
+				}
+			}
+			http.open("GET", "/users", true);
+			http.send();
+		}
+	</script>
+</head>
+
+<body>
+	<input type="button" value="Get Data" onclick="getdata()">
+	<table id="table" border="1">
+		<tr>
+			<td>SSN</td>
+			<td>FNAME</td>
+			<td>LNAME</td>
+		</tr>
+	</table>
+</body>
+
+</html>
