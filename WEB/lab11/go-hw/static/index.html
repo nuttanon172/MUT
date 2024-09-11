@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+		// Function to get data (GET request)
+		function getdata() {
+			var http = new XMLHttpRequest();
+			http.onreadystatechange = function () {
+				if (http.readyState == 4 && http.status == 200) {
+					var data = JSON.parse(http.responseText);
+					let table = document.getElementById('table');
+					let txttable = '<tr><td>SSN</td><td>FNAME</td><td>LNAME</td></tr>';
+					for (let i = 0; i < data.length; i++) {
+						txttable += `<tr><td>${data[i].ssn}</td>`;
+						txttable += `<td>${data[i].fname}</td>`;
+						txttable += `<td>${data[i].lname}</td></tr>`;
+					}
+					table.innerHTML = txttable;
+				}
+			};
+			http.open("GET", "/users", true);
+			http.send();
+		}
+
+		function postdata() {
+			var ssn = prompt("Enter SSN:");
+			var fname = prompt("Enter First Name:");
+			var lname = prompt("Enter Last Name:");
+			if (ssn && fname && lname) {
+				var http = new XMLHttpRequest();
+				var newData = {
+					ssn: ssn,
+					fname: fname,
+					lname: lname
+				};
+				http.open("POST", "/users", true);
+				http.setRequestHeader("Content-Type", "application/json");
+				http.onreadystatechange = function () {
+					if (http.readyState == 4) {
+						if (http.status == 201) {
+							alert("Data added successfully");
+							getdata(); // refresh after add data
+						} else if (http.status == 409) {
+							alert("Error: Data already exists for SSN " + ssn);
+						} else if (http.status == 400) {
+							alert("Error: Invalid input data.");
+						} else {
+							alert("Error: Something went wrong.");
+						}
+					}
+				};
+				http.send(JSON.stringify(newData));
+			} else {
+				alert("All fields are required for adding new data.");
+			}
+		}
+
+		// Function to update data (PUT request) with prompt
+		function putdata() {
+			var ssn = prompt("Enter SSN of the user to update:");
+			var fname = prompt("Enter updated First Name:");
+			var lname = prompt("Enter updated Last Name:");
+			if (ssn && fname && lname) {
+				var http = new XMLHttpRequest();
+				var updatedData = {
+					ssn: ssn,
+					fname: fname,
+					lname: lname
+				};
+				http.open("PUT", `/users/${ssn}`, true); // Assuming SSN is the identifier
+				http.setRequestHeader("Content-Type", "application/json");
+				http.onreadystatechange = function () {
+					if (http.readyState == 4 && http.status == 200) {
+						alert("Data updated successfully");
+						getdata(); // Refresh table after updating
+					}
+				};
+				http.send(JSON.stringify(updatedData));
+			} else {
+				alert("All fields are required for updating data.");
+			}
+		}
+
+		// Function to delete data (DELETE request) with prompt
+		function deletedata() {
+			var ssn = prompt("Enter SSN of the user to delete:");
+			if (ssn) {
+				var http = new XMLHttpRequest();
+				http.open("DELETE", `/users/${ssn}`, true); // Assuming SSN is the identifier
+				http.onreadystatechange = function () {
+					if (http.readyState == 4 && http.status == 200) {
+						alert("Data deleted successfully");
+						getdata(); // Refresh table after deletion
+					}
+				};
+				http.send();
+			} else {
+				alert("SSN is required to delete data.");
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<input type="button" value="Get Data" onclick="getdata()">
+	<input type="button" value="Post Data" onclick="postdata()">
+	<input type="button" value="Put Data" onclick="putdata()">
+	<input type="button" value="Delete Data" onclick="deletedata()">
+	
+	<table id="table" border="1">
+		<tr>
+			<td>SSN</td>
+			<td>FNAME</td>
+			<td>LNAME</td>
+		</tr>
+	</table>
+</body>
+
+</html>
