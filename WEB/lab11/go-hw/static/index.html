@@ -23,6 +23,33 @@
 			http.send();
 		}
 
+		function getSSN() {
+			var ssn = prompt("Enter SSN:");
+			if (ssn) {
+				var http = new XMLHttpRequest();
+				http.onreadystatechange = function () {
+					if (http.readyState == 4 && http.status == 200) {
+						var data = JSON.parse(http.responseText);
+						let table = document.getElementById('table');
+						let txttable = '<tr><td>SSN</td><td>FNAME</td><td>LNAME</td></tr>';
+						for (let i = 0; i < data.length; i++) {
+							if (data[i].ssn == ssn) {
+								txttable += `<tr><td>${data[i].ssn}</td>`;
+								txttable += `<td>${data[i].fname}</td>`;
+								txttable += `<td>${data[i].lname}</td></tr>`;
+							}
+						}
+						table.innerHTML = txttable;
+					}
+				};
+			}
+			else {
+				alert("fields are required for adding new data.");
+			}
+			http.open("GET", "/users", true);
+			http.send();
+		}
+
 		function postdata() {
 			var ssn = prompt("Enter SSN:");
 			var fname = prompt("Enter First Name:");
@@ -39,9 +66,8 @@
 				http.onreadystatechange = function () {
 					if (http.readyState == 4) {
 						if (http.status == 201) {
-							alert("Data added successfully");
-							getdata(); // refresh after add data
-						} else if (http.status == 409) {
+							getdata();
+						} else if (http.status == 409 && ssn != null) {
 							alert("Error: Data already exists for SSN " + ssn);
 						} else if (http.status == 400) {
 							alert("Error: Invalid input data.");
@@ -72,7 +98,6 @@
 				http.setRequestHeader("Content-Type", "application/json");
 				http.onreadystatechange = function () {
 					if (http.readyState == 4 && http.status == 200) {
-						alert("Data updated successfully");
 						getdata(); // Refresh table after updating
 					}
 				};
@@ -90,7 +115,6 @@
 				http.open("DELETE", `/users/${ssn}`, true); // Assuming SSN is the identifier
 				http.onreadystatechange = function () {
 					if (http.readyState == 4 && http.status == 200) {
-						alert("Data deleted successfully");
 						getdata(); // Refresh table after deletion
 					}
 				};
@@ -104,10 +128,11 @@
 
 <body>
 	<input type="button" value="Get Data" onclick="getdata()">
+	<input type="button" value="Get Data by SSN" onclick="getSSN()">
 	<input type="button" value="Post Data" onclick="postdata()">
 	<input type="button" value="Put Data" onclick="putdata()">
 	<input type="button" value="Delete Data" onclick="deletedata()">
-	
+
 	<table id="table" border="1">
 		<tr>
 			<td>SSN</td>
